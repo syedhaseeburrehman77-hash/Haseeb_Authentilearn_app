@@ -64,7 +64,8 @@ def analyze_submission_authenticity(text: str, api_key: str = None, demo_mode: b
         client = get_gemini_client(api_key)
         response = client.models.generate_content(
             model="gemini-2.0-flash",
-            contents=prompt
+            contents=prompt,
+            config={"response_mime_type": "application/json"}
         )
         result = parse_json_safely(response.text, None)
         

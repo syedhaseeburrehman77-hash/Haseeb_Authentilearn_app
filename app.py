@@ -2,7 +2,6 @@
 import streamlit as st
 import time
 import os
-os.environ["GOOGLE_API_KEY"] = "AIzaSyDTqzkSueuGh4MiHFQFdXF0u23o-Xa1vhM"
 import json
 import plotly.graph_objects as go
 import plotly.express as px
@@ -132,7 +131,7 @@ if "security_warning" not in st.session_state:
 if "security_error" not in st.session_state:
     st.session_state.security_error = None
 if "api_key" not in st.session_state:
-    st.session_state.api_key = "AIzaSyDTqzkSueuGh4MiHFQFdXF0u23o-Xa1vhM"
+    st.session_state.api_key = os.environ.get("GOOGLE_API_KEY", "")
 
 
 # Hardcoded Demo Contents
@@ -840,7 +839,7 @@ elif st.session_state.stage == "courses":
         <p>Manage your academic enrollments, select active courses, and initiate oral examinations.</p>
     </div>
     """, unsafe_allow_html=True)
-    st.image("assets/courses_illustration_1779355247420.png", use_container_width=True)
+    st.image("assets/courses_illustration_1779355247420.png", width=160)
     
     # Auto-populate a couple of default courses if database is empty
     try:
@@ -974,7 +973,7 @@ elif st.session_state.stage == "chatbot":
         <p>Interact with our smart AI assistant to clarify course concepts, research syllabus topics, and verify academic understanding.</p>
     </div>
     """, unsafe_allow_html=True)
-    st.image("assets/study_buddy_illustration_1779355592838.png", use_container_width=True)
+    st.image("assets/study_buddy_illustration_1779355592838.png", width=160)
     
     if st.session_state.active_course:
         course = st.session_state.active_course
@@ -1053,7 +1052,7 @@ elif st.session_state.stage == "upload":
         <p>{get_txt('subtitle')}</p>
     </div>
     """, unsafe_allow_html=True)
-    st.image("assets/coursework_illustration_1779355345723.png", use_container_width=True)
+    st.image("assets/coursework_illustration_1779355345723.png", width=160)
     
     # Check if we have analyzed coursework and generated questions
     if st.session_state.questions:
@@ -1445,7 +1444,7 @@ elif st.session_state.stage == "upload":
                 <div class="timeline-desc">Analyzes understanding depth, generates strengths vs gaps metrics, and renders a magnificent 6-chart graph dashboard.</div>
             </div>
             """, unsafe_allow_html=True)
-            st.image("assets/oral_exam_illustration_1779355443491.png", use_container_width=True)
+            st.image("assets/oral_exam_illustration_1779355443491.png", width=160)
 
 
 # ========================================================
@@ -2090,7 +2089,7 @@ elif st.session_state.stage == "viva":
             </span>
         </div>
         """, unsafe_allow_html=True)
-        st.image("assets/verdict_illustration_1779355471609.png", use_container_width=True)
+        st.image("assets/verdict_illustration_1779355471609.png", width=160)
 
 
 # ========================================================
