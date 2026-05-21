@@ -281,7 +281,7 @@ TRANSLATIONS = {
         "detected_label": "📚 Detected:",
         "level_label": "Level",
         "word_counter": "words typed",
-        "powered_by": "Powered by Gemini 2.0 Flash"
+        "powered_by": "Developed by Syed Haseeb ur Rehman"
     },
     "Urdu": {
         "title": "آتھینٹی لرن AI",
@@ -309,7 +309,7 @@ TRANSLATIONS = {
         "detected_label": "📚 دریافت شدہ موضوع:",
         "level_label": "سطح",
         "word_counter": "الفاظ لکھے گئے",
-        "powered_by": "جیمنی 2.0 فلیش کی طاقت"
+        "powered_by": "سید حسیب الرحمن کی طرف سے تیار کردہ"
     },
     "Arabic": {
         "title": "أوثينتي ليرن AI",
@@ -337,7 +337,7 @@ TRANSLATIONS = {
         "detected_label": "📚 الموضوع المكتشف:",
         "level_label": "مستوى",
         "word_counter": "كلمات مكتوبة",
-        "powered_by": "مدعوم من جيميناي 2.0 فلاش"
+        "powered_by": "تم التطوير بواسطة سيد حسيب الرحمن"
     }
 }
 
@@ -1119,7 +1119,7 @@ elif st.session_state.stage == "upload":
         <p>{get_txt('subtitle')}</p>
     </div>
     """, unsafe_allow_html=True)
-    st.image("assets/coursework_illustration_1779355345723.png", width=360)
+    st.image("assets/coursework_illustration_1779355345723.png", use_container_width=True)
     
     # Check if we have analyzed coursework and generated questions
     if st.session_state.questions:
@@ -1511,7 +1511,6 @@ elif st.session_state.stage == "upload":
                 <div class="timeline-desc">Analyzes understanding depth, generates strengths vs gaps metrics, and renders a magnificent 6-chart graph dashboard.</div>
             </div>
             """, unsafe_allow_html=True)
-            st.image("assets/oral_exam_illustration_1779355443491.png", width=360)
 
 
 # ========================================================
