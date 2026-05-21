@@ -1,0 +1,17 @@
+streamlit>=1.35.0
+google-genai>=0.8.0
+PyPDF2>=3.0.1
+python-docx>=1.1.0
+python-dotenv>=1.0.0
+plotly>=5.20.0
+pandas>=2.0.0
+gtts>=2.5.0
+streamlit-extras>=0.4.2
+Pillow>=10.0.0
+opencv-python-headless>=4.8.0
+numpy>=1.24.0
+SpeechRecognition>=3.10.0
+sounddevice>=0.4.6
+librosa>=0.10.0
+scipy>=1.11.0
+kaleido>=0.2.1
