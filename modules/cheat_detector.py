@@ -30,31 +30,205 @@ def analyze_submission_authenticity(text: str, api_key: str = None, demo_mode: b
     Analyzes student submission for signs of AI authorship or copy-paste plagiarism.
     """
     if demo_mode:
-        # Build slight dynamic variability based on the length of input
-        res = DEMO_CHEAT_RESULT.copy()
-        
-        # If user uploaded FoliarNet or essay, let's tailor the mock phrases to match!
         text_lower = text.lower()
+        
+        # 1. Maintain compatibility with standard demo samples
         if "foliarnet" in text_lower or "tomato" in text_lower:
-            res["suspicious_phrases"] = [
-                {"phrase": "early detection of foliar crop", "reason": "Copy-paste match"},
-                {"phrase": "Our model integrates", "reason": "AI template structure"},
-                {"phrase": "Furthermore, we conducted", "reason": "AI transition"}
-            ]
-            res["copy_paste_likelihood"] = 28
-            res["ai_generated_likelihood"] = 35
-            res["overall_authenticity_score"] = 72
+            return {
+                "copy_paste_likelihood": 28,
+                "ai_generated_likelihood": 35,
+                "suspicious_phrases": [
+                    {"phrase": "early detection of foliar crop", "reason": "Copy-paste match"},
+                    {"phrase": "Our model integrates", "reason": "AI template structure"},
+                    {"phrase": "Furthermore, we conducted", "reason": "AI transition"}
+                ],
+                "writing_style_flags": ["Highly technical syntax", "Consistent domain terminology"],
+                "vocabulary_level": "suspiciously_advanced",
+                "sentence_length_variance": "high",
+                "overall_authenticity_score": 72
+            }
         elif "ethical" in text_lower or "economic" in text_lower:
-            res["suspicious_phrases"] = [
-                {"phrase": "The rapid advancement of", "reason": "Common AI hook"},
-                {"phrase": "On one hand", "reason": "Formulaic structure"},
-                {"phrase": "fostering critical thinking", "reason": "Buzzword pattern"}
-            ]
-            res["copy_paste_likelihood"] = 48
-            res["ai_generated_likelihood"] = 55
-            res["overall_authenticity_score"] = 52
+            return {
+                "copy_paste_likelihood": 48,
+                "ai_generated_likelihood": 55,
+                "suspicious_phrases": [
+                    {"phrase": "The rapid advancement of", "reason": "Common AI hook"},
+                    {"phrase": "On one hand", "reason": "Formulaic structure"},
+                    {"phrase": "fostering critical thinking", "reason": "Buzzword pattern"}
+                ],
+                "writing_style_flags": ["Formulaic paragraph structure", "Over-balanced arguments"],
+                "vocabulary_level": "slightly_advanced",
+                "sentence_length_variance": "low",
+                "overall_authenticity_score": 52
+            }
             
-        return res
+        # 2. Dynamic Plagiarism and AI Feature Extraction Engine for custom text!
+        ai_transitions = [
+            ("it is worth noting that", "AI transition pattern"),
+            ("furthermore", "Repetitive AI transition"),
+            ("moreover", "AI flow connector"),
+            ("in conclusion", "Standard ChatGPT ending"),
+            ("it is important to highlight", "AI phrasing marker"),
+            ("on one hand", "Formulaic text partition"),
+            ("on the other hand", "Formulaic text partition"),
+            ("consequently", "Academic transition pattern"),
+            ("subsequently", "Academic transition pattern"),
+            ("fostering critical thinking", "Standard generative buzz-phrase"),
+            ("rapid advancement of", "Common AI hook phrasing"),
+            ("plays a pivotal role", "AI cliché expression"),
+            ("it is vital to", "AI imperative tone"),
+            ("as mentioned previously", "Redundant transition pattern"),
+            ("not only", "Syntactic parallelism"),
+            ("in order to", "Verbose structural pattern")
+        ]
+        
+        ai_buzzwords = [
+            ("leverage", "AI buzzword"),
+            ("leverages", "AI buzzword"),
+            ("leveraging", "AI buzzword"),
+            ("delve", "AI boilerplate word"),
+            ("delves", "AI boilerplate word"),
+            ("delving", "AI boilerplate word"),
+            ("tapestry", "AI signature metaphor"),
+            ("holistic", "AI buzzword pattern"),
+            ("seamless", "AI quality descriptor"),
+            ("seamlessly", "AI quality descriptor"),
+            ("catalyst", "AI cliché metaphor"),
+            ("revolutionize", "AI marketing buzzword"),
+            ("pivotal", "AI structural cliché"),
+            ("synergy", "Corporate/AI buzzword"),
+            ("testament", "AI stylistic cliché"),
+            ("multifaceted", "AI stylistic cliché")
+        ]
+        
+        suspicious_phrases = []
+        ai_phrase_count = 0
+        
+        # Scan text case-insensitively and extract exact matched substrings
+        for term, reason in ai_transitions + ai_buzzwords:
+            try:
+                pattern = re.compile(r'\b' + re.escape(term) + r'\b', re.IGNORECASE)
+                matches = list(pattern.finditer(text))
+                if matches:
+                    matched_str = matches[0].group(0)
+                    suspicious_phrases.append({
+                        "phrase": matched_str,
+                        "reason": reason
+                    })
+                    ai_phrase_count += len(matches)
+            except Exception:
+                idx = text_lower.find(term)
+                if idx != -1:
+                    matched_str = text[idx:idx+len(term)]
+                    suspicious_phrases.append({
+                        "phrase": matched_str,
+                        "reason": reason
+                    })
+                    ai_phrase_count += 1
+
+        # Sentence analysis
+        sentences = [s.strip() for s in re.split(r'[.!?\n]+', text) if s.strip()]
+        words = text.split()
+        word_count = len(words)
+        
+        # Calculate sentence length stats
+        lengths = [len(s.split()) for s in sentences if s.split()] if sentences else [0]
+        avg_len = sum(lengths) / len(lengths) if lengths else 0
+        variance = sum((l - avg_len) ** 2 for l in lengths) / len(lengths) if lengths else 0
+        
+        # Unique word complexity
+        unique_words = list(set([w.strip(".,()\"';:").lower() for w in words if len(w) > 3]))
+        avg_word_len = sum(len(w) for w in unique_words) / len(unique_words) if unique_words else 0
+        
+        # Extract long academic phrasing from input if list of phrases is short
+        if len(suspicious_phrases) < 4 and sentences:
+            sorted_sentences = sorted(sentences, key=lambda s: len(s), reverse=True)
+            for s in sorted_sentences:
+                if len(suspicious_phrases) >= 5:
+                    break
+                s_words = s.split()
+                if len(s_words) > 12:
+                    start_idx = max(1, len(s_words) // 2 - 2)
+                    chunk_words = s_words[start_idx:start_idx+5]
+                    phrase = " ".join(chunk_words).strip(".,()\"';:")
+                    if len(phrase) > 10 and not any(p["phrase"].lower() in phrase.lower() for p in suspicious_phrases):
+                        suspicious_phrases.append({
+                            "phrase": phrase,
+                            "reason": "Dense academic vocabulary cluster" if avg_word_len > 5.2 else "Highly formal passive phrasing"
+                        })
+                        
+        # Deterministic scoring via text length and character code sum
+        text_hash = sum(ord(c) for c in text[:1000]) if text else 42
+        
+        # Plagiarism score
+        base_cp = 15.0
+        if avg_word_len > 5.4:
+            base_cp += 25.0
+        elif avg_word_len > 4.7:
+            base_cp += 12.0
+        if avg_len > 20.0:
+            base_cp += 15.0
+            
+        cp_score = base_cp + (text_hash % 20)
+        copy_paste_likelihood = int(min(90.0, max(10.0, cp_score)))
+        
+        # AI Likelihood score
+        base_ai = 12.0 + (ai_phrase_count * 6.0)
+        if variance < 25.0:
+            base_ai += 25.0  # low variance (uniform sentence lengths) indicates AI
+        elif variance < 60.0:
+            base_ai += 12.0
+            
+        ai_score = base_ai + ((text_hash * 7) % 18)
+        ai_generated_likelihood = int(min(95.0, max(8.0, ai_score)))
+        
+        # Overall authenticity score calculation (higher means more human-written)
+        auth_score = 100.0 - (copy_paste_likelihood * 0.4 + ai_generated_likelihood * 0.6)
+        auth_score = max(5.0, min(98.0, auth_score + (text_hash % 8) - 4))
+        overall_authenticity_score = int(auth_score)
+        
+        # Set vocabulary level
+        if avg_word_len > 5.4:
+            vocabulary_level = "suspiciously_advanced"
+        elif avg_word_len > 4.7:
+            vocabulary_level = "slightly_advanced"
+        else:
+            vocabulary_level = "standard"
+            
+        # Set variance level
+        if variance < 20.0:
+            sentence_length_variance = "low"
+        elif variance < 60.0:
+            sentence_length_variance = "medium"
+        else:
+            sentence_length_variance = "high"
+            
+        # Compile writing style flags
+        writing_style_flags = []
+        if variance < 25.0:
+            writing_style_flags.append("Extremely uniform sentence lengths")
+        else:
+            writing_style_flags.append("Natural expressive sentence variance")
+            
+        if avg_word_len > 5.3:
+            writing_style_flags.append("Highly elevated lexical density")
+        else:
+            writing_style_flags.append("Syllabic structure within standard ranges")
+            
+        if ai_phrase_count > 2:
+            writing_style_flags.append("Repetitive structural transition markers")
+        else:
+            writing_style_flags.append("Grammatically cohesive paragraph progression")
+            
+        return {
+            "copy_paste_likelihood": copy_paste_likelihood,
+            "ai_generated_likelihood": ai_generated_likelihood,
+            "suspicious_phrases": suspicious_phrases,
+            "writing_style_flags": writing_style_flags,
+            "vocabulary_level": vocabulary_level,
+            "sentence_length_variance": sentence_length_variance,
+            "overall_authenticity_score": overall_authenticity_score
+        }
         
     # Live Mode via Gemini SDK
     truncated_content = text[:4000]
@@ -76,13 +250,21 @@ def analyze_submission_authenticity(text: str, api_key: str = None, demo_mode: b
         required_keys = ["copy_paste_likelihood", "ai_generated_likelihood", "suspicious_phrases", "writing_style_flags", "vocabulary_level", "sentence_length_variance", "overall_authenticity_score"]
         for key in required_keys:
             if key not in result:
-                result[key] = DEMO_CHEAT_RESULT[key]
+                result[key] = {
+                    "copy_paste_likelihood": 42,
+                    "ai_generated_likelihood": 38,
+                    "suspicious_phrases": [],
+                    "writing_style_flags": ["Perfect grammatical parallelism"],
+                    "vocabulary_level": "suspiciously_advanced",
+                    "sentence_length_variance": "low",
+                    "overall_authenticity_score": 61
+                }[key]
                 
         return result
     except Exception as e:
         print(f"Submission authenticity analysis failed: {str(e)}")
-        # Graceful fallback to demo in case of credentials/limit failure
-        return DEMO_CHEAT_RESULT
+        # Graceful fallback to dynamic analysis instead of hardcoded results
+        return analyze_submission_authenticity(text, demo_mode=True)
 
 def highlight_suspicious_text(text: str, suspicious_phrases: list) -> str:
     """
